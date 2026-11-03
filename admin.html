@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | DTC e-Bus Pass</title>
+  <link rel="icon" href="images/DTC1.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #01a2a6;
+      --primary-dark: #008184;
+      --primary-navy: #07234b;
+      --bg: #f3f6f8;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--primary-navy);
+      color: white;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .brand img {
+      height: 40px;
+      border-radius: 4px;
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-pill {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .header-pill:hover {
+      opacity: 0.9;
+    }
+    .pill-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+    .pill-orange {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .header-btn {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .logout-btn {
+      color: #fda4af;
+      background: none;
+      border: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 6px 8px;
+    }
+    .logout-btn:hover {
+      color: #ffffff;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 35, 75, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 540px;
+      padding: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .modal-subtitle {
+      font-size: 0.87rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    /* Tabs inside Modal */
+    .modal-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+
+    .modal-tab {
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .modal-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Lock Screen */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 35, 75, 0.95);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 16px;
+    }
+
+    .lock-card {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .lock-logo {
+      height: 60px;
+      margin-bottom: 16px;
+    }
+
+    .lock-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 6px;
+    }
+
+    .lock-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .lock-input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .lock-input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* Container & Layout */
+    .container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 24px;
+      flex: 1;
+    }
+
+    @media (max-width: 950px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #e0f2fe; color: #0369a1; }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .label-hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    input[type="text"], input[type="password"], select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(1, 162, 166, 0.15);
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover {
+      background: rgba(1, 162, 166, 0.08);
+    }
+
+    /* Images Grid */
+    .img-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .img-upload-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      background: #fafafa;
+      position: relative;
+    }
+
+    .preview-thumb {
+      width: 100%;
+      height: 120px;
+      object-fit: contain;
+      margin: 8px 0;
+      background: #ffffff;
+      border-radius: 4px;
+      border: 1px solid #edf2f7;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .upload-btn:hover {
+      background: #cbd5e1;
+    }
+
+    .qr-helper-btn {
+      margin-top: 6px;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 4px 12px rgba(1, 162, 166, 0.25);
+    }
+
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* Live Pass Preview */
+    .preview-container {
+      position: sticky;
+      top: 80px;
+    }
+
+    .pass-preview-card {
+      border: 3px solid #000;
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      padding: 16px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .preview-header {
+      background: #01a2a6;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      padding: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .preview-user-img {
+      width: 110px;
+      height: 130px;
+      object-fit: cover;
+      margin: 0 auto 10px auto;
+      display: block;
+      border: 1px solid #ccc;
+    }
+
+    .preview-name {
+      font-weight: 700;
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .preview-route {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .preview-passno {
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      text-align: center;
+      padding: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .preview-passno b {
+      color: #b91c1c;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .preview-validity {
+      font-size: 0.8rem;
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .preview-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+    }
+
+    .preview-sig {
+      max-height: 40px;
+      max-width: 120px;
+      object-fit: contain;
+    }
+
+    .preview-qr {
+      width: 65px;
+      height: 65px;
+      object-fit: contain;
+    }
+
+    /* Notifications & Accordions */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 16px;
+      display: none;
+      line-height: 1.45;
+    }
+
+    .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .alert-info { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
+    .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+    .accordion-toggle {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .spinner {
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid #ffffff;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    .spinner-dark {
+      border: 2px solid rgba(0,0,0,0.15);
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .setup-banner {
+      background: linear-gradient(135deg, #01a2a6 0%, #07234b 100%);
+      color: white;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .setup-banner-text h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .setup-banner-text p {
+      font-size: 0.82rem;
+      opacity: 0.9;
+    }
+    .setup-banner button {
+      background: white;
+      color: var(--primary-navy);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s;
+    }
+    .setup-banner button:hover {
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================================================== -->
+  <!-- 1. LOCK SCREEN MODAL                                 -->
+  <!-- ==================================================== -->
+  <div id="lock-screen">
+    <div class="lock-card">
+      <img src="images/DTC1.png" alt="DTC Logo" class="lock-logo">
+      <h2 class="lock-title">Admin Access</h2>
+      <p class="lock-subtitle">Enter password to edit pass & auto-deploy to Vercel</p>
+      
+      <form id="lock-form">
+        <div class="lock-input-group">
+          <label for="admin-login-pass">Admin Password</label>
+          <input type="password" id="admin-login-pass" placeholder="Enter password (default: admin)" required autofocus>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
+            First time logging in? Default password is: <b>admin</b>
+          </div>
+        </div>
+
+        <button type="submit" id="unlock-btn" class="btn-primary">
+          <span id="unlock-btn-text">Unlock Dashboard</span>
+          <div id="unlock-spinner" class="spinner hidden"></div>
+        </button>
+
+        <div id="lock-error" class="alert alert-danger" style="margin-top: 14px;"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 2. AUTOMATIC FIRST-TIME SETUP MODAL                  -->
+  <!-- ==================================================== -->
+  <div id="setup-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>🚀 Connect GitHub & Vercel</span>
+        </div>
+        <button type="button" class="modal-close" id="close-setup-modal">&times;</button>
+      </div>
+
+      <p class="modal-subtitle">
+        Zero Vercel environment variables required! Enter your GitHub details once below so this admin portal can push pass updates and auto-deploy to Vercel.
+      </p>
+
+      <form id="setup-form">
+        <div class="form-group">
+          <label for="setup-repo">
+            GitHub Repository (Owner/Repo)
+            <span class="label-hint">e.g. your-username/dtc-bus-pass</span>
+          </label>
+          <input type="text" id="setup-repo" placeholder="username/repo-name" required>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+            <label for="setup-token" style="margin-bottom: 0;">
+              GitHub Personal Access Token
+            </label>
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=DTC-Pass-Updater" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 0.72rem;">
+              🔑 Create Token (1-Click) &nearr;
+            </a>
+          </div>
+          <input type="password" id="setup-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+          <span class="label-hint" style="display: block; margin-top: 4px;">
+            Classic token with <b>repo</b> scope checked so commits can be pushed.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-branch">
+            Branch
+            <span class="label-hint">Usually main or master</span>
+          </label>
+          <input type="text" id="setup-branch" value="main" placeholder="main">
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px;">
+          <label style="color: var(--primary-navy);">
+            Change Admin Password (Optional)
+          </label>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+            Change password from 'admin' to your own secret. Leave blank to keep current password.
+          </p>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="password" id="setup-new-pass" placeholder="New Password">
+            </div>
+            <div class="form-group">
+              <input type="password" id="setup-confirm-pass" placeholder="Confirm Password">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" id="test-setup-conn-btn" class="btn-secondary" style="flex: 1;">
+            <span id="test-setup-text">🔍 Test Connection</span>
+            <div id="test-setup-spinner" class="spinner-dark hidden"></div>
+          </button>
+          <button type="submit" id="save-setup-btn" class="btn-primary" style="flex: 1.5;">
+            <span id="save-setup-text">Save & Finish Setup</span>
+            <div id="save-setup-spinner" class="spinner hidden"></div>
+          </button>
+        </div>
+
+        <div id="setup-alert" class="alert"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 3. SETTINGS & PASSWORD CHANGE MODAL                  -->
+  <!-- ==================================================== -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>⚙️ Settings & Security</span>
+        </div>
+        <button type="button" class="modal-close" id="close-settings-modal">&times;</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="modal-tabs">
+        <button type="button" class="modal-tab active" id="tab-btn-password">🔐 Admin Password</button>
+        <button type="button" class="modal-tab" id="tab-btn-github">🐙 GitHub & Vercel Sync</button>
+      </div>
+
+      <!-- Tab Content 1: Change Password -->
+      <div id="tab-content-password">
+        <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 16px;">
+          Change your admin password directly here. The update will be committed to your GitHub repo and auto-deployed to Vercel without manually setting environment variables.
+        </p>
+
+        <form id="change-pass-form">
+          <div class="form-group">
+            <label for="current-pass">Current Password</label>
+            <input type="password" id="current-pass" placeholder="Enter current password" required>
+          </div>
+
+          <div class="form-group">
+            <label for="new-pass">New Admin Password</label>
+            <input type="password" id="new-pass" placeholder="At least 3 characters" required>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-new-pass">Confirm New Password</label>
+            <input type="password" id="confirm-new-pass" placeholder="Re-enter new password" required>
+          </div>
+
+          <button type="submit" id="update-pass-btn" class="btn-primary" style="margin-top: 10px;">
+            <span id="update-pass-text">Update Password & Redeploy</span>
+            <div id="update-pass-spinner" class="spinner hidden"></div>
+          </button>
+
+          <div id="pass-alert" class="alert"></div>
+        </form>
+      </div>
+
+      <!-- Tab Content 2: GitHub Settings -->
+      <div id="tab-content-github" class="hidden">
+        <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 16px;">
+          Configure where your pass files are committed. These are stored safely in your browser and used automatically for every pass update.
+        </p>
+
+        <form id="settings-github-form">
+          <div class="form-group">
+            <label for="settings-repo">GitHub Repository (Owner/Repo)</label>
+            <input type="text" id="settings-repo" placeholder="username/repo-name" required>
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+              <label for="settings-token" style="margin-bottom: 0;">GitHub Personal Access Token</label>
+              <a href="https://github.com/settings/tokens/new?scopes=repo&description=DTC-Pass-Updater" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 0.72rem;">
+                🔑 Create Token &nearr;
+              </a>
+            </div>
+            <input type="password" id="settings-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+          </div>
+
+          <div class="form-group">
+            <label for="settings-branch">Branch</label>
+            <input type="text" id="settings-branch" value="main" placeholder="main">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="test-settings-conn-btn" class="btn-secondary" style="flex: 1;">
+              <span id="test-settings-text">🔍 Test Connection</span>
+              <div id="test-settings-spinner" class="spinner-dark hidden"></div>
+            </button>
+            <button type="submit" class="btn-primary" style="flex: 1.5;">
+              Save GitHub Settings
+            </button>
+          </div>
+
+          <div id="settings-alert" class="alert"></div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 4. MAIN PAGE HEADER                                  -->
+  <!-- ==================================================== -->
+  <header>
+    <a href="index.html" class="brand">
+      <img src="images/DTC1.png" alt="DTC Logo">
+      <div>
+        <div class="brand-title">Delhi Transport Corporation</div>
+        <small style="opacity: 0.75; font-size: 0.75rem;">e-Bus Pass Admin & Deployer</small>
+      </div>
+    </a>
+    <div class="header-actions">
+      <!-- Status pill -->
+      <div id="header-status-pill" class="header-pill pill-orange" title="Click to view or edit GitHub connection">
+        <span id="header-status-dot">●</span>
+        <span id="header-status-text">GitHub Setup Needed</span>
+      </div>
+
+      <button type="button" id="open-settings-btn" class="header-btn">
+        <span>⚙️ Settings & Password</span>
+      </button>
+
+      <a href="index.html" target="_blank" class="header-btn">
+        <span>View Live Pass &rarr;</span>
+      </a>
+
+      <button type="button" id="logout-btn" class="logout-btn">Lock / Logout</button>
+    </div>
+  </header>
+
+  <!-- ==================================================== -->
+  <!-- 5. MAIN CONTAINER                                    -->
+  <!-- ==================================================== -->
+  <div class="container">
+    <!-- Left Column: Form Controls -->
+    <div>
+      <!-- First-time Setup Callout Banner (Shown if not configured) -->
+      <div id="setup-callout-banner" class="setup-banner hidden">
+        <div class="setup-banner-text">
+          <h4>🚀 Connect GitHub to enable Auto-Deploy</h4>
+          <p>Zero Vercel environment variables needed! Connect your repository once to deploy pass updates directly.</p>
+        </div>
+        <button type="button" id="banner-setup-btn">Connect Now</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Pass Details</span>
+          <span id="sync-status" class="badge badge-warning">Loading...</span>
+        </div>
+
+        <form id="pass-form">
+          <div class="form-group">
+            <label for="busPassNo">Bus Pass Number</label>
+            <input type="text" id="busPassNo" name="busPassNo" placeholder="e.g. 7502122518771" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Passenger Name</label>
+              <input type="text" id="name" name="name" placeholder="e.g. GOPAL" required>
+            </div>
+            <div class="form-group">
+              <label for="route">Route / Category</label>
+              <input type="text" id="route" name="route" placeholder="e.g. Student All route AC/Non AC" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="validFrom">Valid From (DD/MM/YYYY)</label>
+              <input type="text" id="validFrom" name="validFrom" placeholder="11/12/2025" required>
+            </div>
+            <div class="form-group">
+              <label for="validTo">Valid To (DD/MM/YYYY)</label>
+              <input type="text" id="validTo" name="validTo" placeholder="10/01/2026" required>
+            </div>
+          </div>
+
+          <div class="card-title" style="margin-top: 24px;">
+            <span>Pass Images (Auto-Converted to Base64)</span>
+          </div>
+
+          <div class="img-upload-grid">
+            <!-- User Photo Upload -->
+            <div class="upload-box">
+              <label style="margin: 0;">User Photo</label>
+              <img id="thumb-user" class="preview-thumb" src="" alt="User Photo">
+              <label class="upload-btn" for="input-user-photo">Upload Photo</label>
+              <input type="file" id="input-user-photo" class="file-input" accept="image/*">
+            </div>
+
+            <!-- Signature Photo Upload -->
+            <div class="upload-box">
+              <label style="margin: 0;">Signature</label>
+              <img id="thumb-sig" class="preview-thumb" src="" alt="Signature">
+              <label class="upload-btn" for="input-sig">Upload Signature</label>
+              <input type="file" id="input-sig" class="file-input" accept="image/*">
+            </div>
+
+            <!-- QR Code Upload -->
+            <div class="upload-box">
+              <label style="margin: 0;">QR Code</label>
+              <img id="thumb-qr" class="preview-thumb" src="" alt="QR Code">
+              <label class="upload-btn" for="input-qr">Upload QR Code</label>
+              <input type="file" id="input-qr" class="file-input" accept="image/*">
+              <button type="button" class="qr-helper-btn" id="generate-qr-btn">Auto-Generate QR</button>
+            </div>
+          </div>
+
+          <!-- Quick GitHub Settings Inline Accordion -->
+          <div class="card-title" style="margin-top: 24px;">
+            <span>GitHub & Vercel Sync Settings</span>
+            <button type="button" id="toggle-config-btn" class="accordion-toggle">Configure &#9662;</button>
+          </div>
+
+          <div id="config-section" class="hidden">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+              Saved in your browser — zero Vercel environment variables needed:
+            </p>
+            <div class="form-group">
+              <label for="githubToken">GitHub Personal Access Token ('repo' scope)</label>
+              <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="githubRepo">GitHub Repository (Owner/Repo)</label>
+                <input type="text" id="githubRepo" placeholder="username/repository">
+              </div>
+              <div class="form-group">
+                <label for="branch">Branch</label>
+                <input type="text" id="branch" value="main" placeholder="main">
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 28px;">
+            <button type="submit" id="save-btn" class="btn-primary">
+              <span id="btn-text">Save & Automatically Deploy to Vercel</span>
+              <div id="btn-spinner" class="spinner hidden"></div>
+            </button>
+          </div>
+
+          <div id="alert-box" class="alert"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Live Sticky Pass Preview -->
+    <div class="preview-container">
+      <div class="card">
+        <div class="card-title">
+          <span>Live Pass Preview</span>
+          <small style="font-size: 0.75rem; color: var(--text-muted);">Real-time</small>
+        </div>
+
+        <div class="pass-preview-card">
+          <div class="preview-header">DTC And Cluster Bus Pass</div>
+          <img id="live-user-img" class="preview-user-img" src="" alt="User Photo">
+          <div id="live-name" class="preview-name">GOPAL</div>
+          <div id="live-route" class="preview-route">Student All route AC/Non AC</div>
+          <div class="preview-passno">
+            Bus Pass No. <b id="blink-prev">7502122518771</b>
+          </div>
+          <div id="live-validity" class="preview-validity">Valid from 11/12/2025 to 10/01/2026</div>
+
+          <div class="preview-footer">
+            <div>
+              <img id="live-sig" class="preview-sig" src="" alt="Signature">
+            </div>
+            <div>
+              <img id="live-qr" class="preview-qr" src="" alt="QR">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Authentication & App State
+    let currentPassword = sessionStorage.getItem('dtc_admin_pass') || localStorage.getItem('dtc_admin_pass') || '';
+    let serverConfigData = null;
+    let passData = {
+      name: '',
+      route: '',
+      busPassNo: '',
+      validFrom: '',
+      validTo: '',
+      userPhoto: '',
+      signature: '',
+      qrCode: ''
+    };
+
+    // Check Lock Screen on Page Load
+    function checkAuth() {
+      if (currentPassword) {
+        document.getElementById('lock-screen').style.display = 'none';
+        loadInitialData();
+      } else {
+        document.getElementById('lock-screen').style.display = 'flex';
+      }
+    }
+
+    // Lock Form Submit Handler
+    document.getElementById('lock-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const passInput = document.getElementById('admin-login-pass').value.trim();
+      const lockError = document.getElementById('lock-error');
+      const unlockBtn = document.getElementById('unlock-btn');
+      const unlockText = document.getElementById('unlock-btn-text');
+      const unlockSpinner = document.getElementById('unlock-spinner');
+
+      lockError.style.display = 'none';
+      unlockBtn.disabled = true;
+      unlockText.textContent = 'Verifying...';
+      unlockSpinner.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/update-pass', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify-password', password: passInput })
+        });
+
+        if (res.ok) {
+          currentPassword = passInput;
+          sessionStorage.setItem('dtc_admin_pass', passInput);
+          document.getElementById('lock-screen').style.display = 'none';
+          loadInitialData();
+        } else {
+          // Fallback if local preview (no serverless API running)
+          if (res.status === 404 && (passInput === 'admin' || passInput === 'admin123')) {
+            currentPassword = passInput;
+            sessionStorage.setItem('dtc_admin_pass', passInput);
+            document.getElementById('lock-screen').style.display = 'none';
+            loadInitialData();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || 'Invalid Password. (Default is: admin)');
+          }
+        }
+      } catch (err) {
+        lockError.style.display = 'block';
+        lockError.textContent = err.message || 'Incorrect password.';
+      } finally {
+        unlockBtn.disabled = false;
+        unlockText.textContent = 'Unlock Dashboard';
+        unlockSpinner.classList.add('hidden');
+      }
+    });
+
+    // Logout / Lock Button
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      sessionStorage.removeItem('dtc_admin_pass');
+      currentPassword = '';
+      document.getElementById('admin-login-pass').value = '';
+      document.getElementById('lock-screen').style.display = 'flex';
+    });
+
+    // Helper: Test GitHub connection directly with GitHub API
+    async function testGitHubConnection(token, repo) {
+      const cleanRepo = repo
+        .replace(/^https?:\/\/github\.com\//, '')
+        .replace(/\.git$/, '')
+        .trim();
+
+      if (!cleanRepo || !token) {
+        throw new Error('Please enter both GitHub Repository and Personal Access Token.');
+      }
+
+      const res = await fetch(`https://api.github.com/repos/${cleanRepo}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github.v3+json'
+        }
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) throw new Error('Invalid GitHub Token. Please check token permissions.');
+        if (res.status === 404) throw new Error(`Repository "${cleanRepo}" not found or token lacks 'repo' access.`);
+        throw new Error(`GitHub check returned status ${res.status}.`);
+      }
+
+      const repoInfo = await res.json();
+      if (repoInfo.permissions && !repoInfo.permissions.push) {
+        throw new Error(`Connected to ${repoInfo.full_name}, but your token does not have push (write) permissions!`);
+      }
+
+      return repoInfo;
+    }
+
+    // Refresh UI Status Badges
+    function updateConnectionStatusUI() {
+      const token = localStorage.getItem('dtc_github_token');
+      const repo = localStorage.getItem('dtc_github_repo') || (serverConfigData && serverConfigData.githubRepo);
+      const isConfigured = Boolean((token && repo) || (serverConfigData && serverConfigData.hasEnvToken && serverConfigData.hasEnvRepo));
+
+      const headerPill = document.getElementById('header-status-pill');
+      const headerText = document.getElementById('header-status-text');
+      const syncStatus = document.getElementById('sync-status');
+      const banner = document.getElementById('setup-callout-banner');
+
+      if (isConfigured) {
+        headerPill.className = 'header-pill pill-green';
+        headerText.textContent = repo ? `● GitHub: ${repo.split('/').pop()}` : '● GitHub Connected';
+        syncStatus.textContent = 'Vercel Auto-Sync Ready';
+        syncStatus.className = 'badge badge-success';
+        banner.classList.add('hidden');
+      } else {
+        headerPill.className = 'header-pill pill-orange';
+        headerText.textContent = '● GitHub Setup Needed';
+        syncStatus.textContent = 'GitHub Setup Needed';
+        syncStatus.className = 'badge badge-warning';
+        banner.classList.remove('hidden');
+      }
+    }
+
+    // Load initial data
+    async function loadInitialData() {
+      try {
+        try {
+          const apiRes = await fetch('/api/update-pass');
+          if (apiRes.ok) {
+            serverConfigData = await apiRes.json();
+          }
+        } catch (e) {
+          console.log('API running in static mode');
+        }
+
+        // Fetch current pass data
+        const jsonRes = await fetch('data/pass.json?t=' + Date.now());
+        if (jsonRes.ok) {
+          passData = await jsonRes.json();
+        }
+
+        // Populate pass fields
+        document.getElementById('busPassNo').value = passData.busPassNo || '';
+        document.getElementById('name').value = passData.name || '';
+        document.getElementById('route').value = passData.route || '';
+        document.getElementById('validFrom').value = passData.validFrom || '';
+        document.getElementById('validTo').value = passData.validTo || '';
+
+        updateThumbnailsAndLivePreview();
+
+        // Restore saved settings into all form fields
+        const savedToken = localStorage.getItem('dtc_github_token') || '';
+        const savedRepo = localStorage.getItem('dtc_github_repo') || (serverConfigData && serverConfigData.githubRepo) || '';
+        const savedBranch = localStorage.getItem('dtc_github_branch') || (serverConfigData && serverConfigData.branch) || 'main';
+
+        document.getElementById('githubToken').value = savedToken;
+        document.getElementById('githubRepo').value = savedRepo;
+        document.getElementById('branch').value = savedBranch;
+
+        document.getElementById('setup-token').value = savedToken;
+        document.getElementById('setup-repo').value = savedRepo;
+        document.getElementById('setup-branch').value = savedBranch;
+
+        document.getElementById('settings-token').value = savedToken;
+        document.getElementById('settings-repo').value = savedRepo;
+        document.getElementById('settings-branch').value = savedBranch;
+
+        updateConnectionStatusUI();
+
+        // AUTOMATIC SETUP POPUP: If GitHub token or repo is missing, pop up setup modal automatically
+        const hasEnv = serverConfigData && serverConfigData.hasEnvToken && serverConfigData.hasEnvRepo;
+        if (!hasEnv && (!savedToken || !savedRepo)) {
+          setTimeout(() => {
+            document.getElementById('setup-modal').classList.remove('hidden');
+          }, 400);
+        }
+      } catch (err) {
+        console.error('Error loading initial data:', err);
+      }
+    }
+
+    function updateThumbnailsAndLivePreview() {
+      document.getElementById('live-name').textContent = document.getElementById('name').value || 'NAME';
+      document.getElementById('live-route').textContent = document.getElementById('route').value || 'ROUTE';
+      document.getElementById('blink-prev').textContent = document.getElementById('busPassNo').value || '0000000000';
+      
+      const vFrom = document.getElementById('validFrom').value || 'DD/MM/YYYY';
+      const vTo = document.getElementById('validTo').value || 'DD/MM/YYYY';
+      document.getElementById('live-validity').textContent = `Valid from ${vFrom} to ${vTo}`;
+
+      if (passData.userPhoto) {
+        document.getElementById('thumb-user').src = passData.userPhoto;
+        document.getElementById('live-user-img').src = passData.userPhoto;
+      }
+      if (passData.signature) {
+        document.getElementById('thumb-sig').src = passData.signature;
+        document.getElementById('live-sig').src = passData.signature;
+      }
+      if (passData.qrCode) {
+        document.getElementById('thumb-qr').src = passData.qrCode;
+        document.getElementById('live-qr').src = passData.qrCode;
+      }
+    }
+
+    ['busPassNo', 'name', 'route', 'validFrom', 'validTo'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateThumbnailsAndLivePreview);
+    });
+
+    // Helper: Convert File to compressed Base64 data URL
+    function fileToBase64(file, maxWidth, maxHeight, callback) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          const base64Url = canvas.toDataURL(mime, 0.88);
+          callback(base64Url);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // File Input Listeners
+    document.getElementById('input-user-photo').addEventListener('change', function(e) {
+      fileToBase64(e.target.files[0], 600, 800, function(base64) {
+        passData.userPhoto = base64;
+        updateThumbnailsAndLivePreview();
+      });
+    });
+
+    document.getElementById('input-sig').addEventListener('change', function(e) {
+      fileToBase64(e.target.files[0], 500, 300, function(base64) {
+        passData.signature = base64;
+        updateThumbnailsAndLivePreview();
+      });
+    });
+
+    document.getElementById('input-qr').addEventListener('change', function(e) {
+      fileToBase64(e.target.files[0], 400, 400, function(base64) {
+        passData.qrCode = base64;
+        updateThumbnailsAndLivePreview();
+      });
+    });
+
+    // Auto-Generate QR Code as Base64
+    document.getElementById('generate-qr-btn').addEventListener('click', function() {
+      const passNo = document.getElementById('busPassNo').value || 'DTC_PASS';
+      const name = document.getElementById('name').value || 'PASSENGER';
+      const qrData = encodeURIComponent(`PASS:${passNo}|NAME:${name}|DTC_BUS_PASS`);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrData}`;
+      
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 250;
+        canvas.height = 250;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        passData.qrCode = canvas.toDataURL('image/png');
+        updateThumbnailsAndLivePreview();
+      };
+      img.src = qrUrl;
+    });
+
+    // Toggle Config Accordion
+    document.getElementById('toggle-config-btn').addEventListener('click', function() {
+      document.getElementById('config-section').classList.toggle('hidden');
+    });
+
+    // ====================================================
+    // MODAL CONTROLS: Open / Close
+    // ====================================================
+    document.getElementById('close-setup-modal').addEventListener('click', () => {
+      document.getElementById('setup-modal').classList.add('hidden');
+    });
+
+    document.getElementById('close-settings-modal').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.add('hidden');
+    });
+
+    document.getElementById('open-settings-btn').addEventListener('click', () => {
+      document.getElementById('current-pass').value = currentPassword;
+      document.getElementById('settings-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('header-status-pill').addEventListener('click', () => {
+      const token = localStorage.getItem('dtc_github_token');
+      const repo = localStorage.getItem('dtc_github_repo');
+      if (!token || !repo) {
+        document.getElementById('setup-modal').classList.remove('hidden');
+      } else {
+        document.getElementById('settings-modal').classList.remove('hidden');
+        document.getElementById('tab-btn-github').click();
+      }
+    });
+
+    document.getElementById('banner-setup-btn').addEventListener('click', () => {
+      document.getElementById('setup-modal').classList.remove('hidden');
+    });
+
+    // Settings Modal Tabs
+    document.getElementById('tab-btn-password').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('tab-btn-github').classList.remove('active');
+      document.getElementById('tab-content-password').classList.remove('hidden');
+      document.getElementById('tab-content-github').classList.add('hidden');
+    });
+
+    document.getElementById('tab-btn-github').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('tab-btn-password').classList.remove('active');
+      document.getElementById('tab-content-github').classList.remove('hidden');
+      document.getElementById('tab-content-password').classList.add('hidden');
+    });
+
+    // ====================================================
+    // FIRST-TIME SETUP: Test & Save Handlers
+    // ====================================================
+    document.getElementById('test-setup-conn-btn').addEventListener('click', async function() {
+      const repo = document.getElementById('setup-repo').value.trim();
+      const token = document.getElementById('setup-token').value.trim();
+      const alertEl = document.getElementById('setup-alert');
+      const spinner = document.getElementById('test-setup-spinner');
+      const text = document.getElementById('test-setup-text');
+
+      alertEl.style.display = 'none';
+      spinner.classList.remove('hidden');
+      text.textContent = 'Testing...';
+
+      try {
+        const repoInfo = await testGitHubConnection(token, repo);
+        alertEl.className = 'alert alert-success';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `✅ <b>Connection Verified!</b> Successfully connected to <code>${repoInfo.full_name}</code> with write access.`;
+      } catch (err) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `❌ <b>Connection Failed:</b> ${err.message}`;
+      } finally {
+        spinner.classList.add('hidden');
+        text.textContent = '🔍 Test Connection';
+      }
+    });
+
+    document.getElementById('setup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const repo = document.getElementById('setup-repo').value.trim();
+      const token = document.getElementById('setup-token').value.trim();
+      const branch = document.getElementById('setup-branch').value.trim() || 'main';
+      const newPass = document.getElementById('setup-new-pass').value.trim();
+      const confirmPass = document.getElementById('setup-confirm-pass').value.trim();
+      const alertEl = document.getElementById('setup-alert');
+      const spinner = document.getElementById('save-setup-spinner');
+      const text = document.getElementById('save-setup-text');
+
+      alertEl.style.display = 'none';
+      spinner.classList.remove('hidden');
+      text.textContent = 'Saving Setup...';
+
+      try {
+        // Validate connection first
+        await testGitHubConnection(token, repo);
+
+        // Save to localStorage
+        localStorage.setItem('dtc_github_token', token);
+        localStorage.setItem('dtc_github_repo', repo);
+        localStorage.setItem('dtc_github_branch', branch);
+
+        // Sync inputs
+        document.getElementById('githubToken').value = token;
+        document.getElementById('githubRepo').value = repo;
+        document.getElementById('branch').value = branch;
+        document.getElementById('settings-token').value = token;
+        document.getElementById('settings-repo').value = repo;
+        document.getElementById('settings-branch').value = branch;
+
+        // If user also wants to change password now
+        if (newPass) {
+          if (newPass !== confirmPass) {
+            throw new Error('New Password and Confirm Password do not match.');
+          }
+          if (newPass.length < 3) {
+            throw new Error('New password must be at least 3 characters.');
+          }
+
+          const changeRes = await fetch('/api/update-pass', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'change-password',
+              currentPassword: currentPassword || 'admin',
+              newPassword: newPass,
+              githubToken: token,
+              githubRepo: repo,
+              branch: branch
+            })
+          });
+
+          const changeData = await changeRes.json().catch(() => ({}));
+          if (changeRes.ok && changeData.success) {
+            currentPassword = newPass;
+            sessionStorage.setItem('dtc_admin_pass', newPass);
+          } else {
+            console.warn('Password change notice:', changeData.error);
+          }
+        }
+
+        updateConnectionStatusUI();
+        alertEl.className = 'alert alert-success';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `🎉 <b>Setup Complete!</b> Credentials saved. Closing...`;
+
+        setTimeout(() => {
+          document.getElementById('setup-modal').classList.add('hidden');
+        }, 1200);
+
+      } catch (err) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `❌ ${err.message}`;
+      } finally {
+        spinner.classList.add('hidden');
+        text.textContent = 'Save & Finish Setup';
+      }
+    });
+
+    // ====================================================
+    // CHANGE PASSWORD HANDLER
+    // ====================================================
+    document.getElementById('change-pass-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const currentPass = document.getElementById('current-pass').value.trim();
+      const newPass = document.getElementById('new-pass').value.trim();
+      const confirmPass = document.getElementById('confirm-new-pass').value.trim();
+      const alertEl = document.getElementById('pass-alert');
+      const btn = document.getElementById('update-pass-btn');
+      const text = document.getElementById('update-pass-text');
+      const spinner = document.getElementById('update-pass-spinner');
+
+      alertEl.style.display = 'none';
+
+      if (newPass !== confirmPass) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.textContent = 'New Password and Confirm Password do not match.';
+        return;
+      }
+
+      if (newPass.length < 3) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.textContent = 'New password must be at least 3 characters.';
+        return;
+      }
+
+      const token = localStorage.getItem('dtc_github_token') || document.getElementById('githubToken').value.trim();
+      const repo = localStorage.getItem('dtc_github_repo') || document.getElementById('githubRepo').value.trim();
+      const branch = localStorage.getItem('dtc_github_branch') || document.getElementById('branch').value.trim() || 'main';
+
+      btn.disabled = true;
+      text.textContent = 'Updating Password & Redeploying...';
+      spinner.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/update-pass', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'change-password',
+            currentPassword: currentPass,
+            newPassword: newPass,
+            githubToken: token,
+            githubRepo: repo,
+            branch: branch
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success) {
+          currentPassword = newPass;
+          sessionStorage.setItem('dtc_admin_pass', newPass);
+
+          alertEl.className = 'alert alert-success';
+          alertEl.style.display = 'block';
+          alertEl.innerHTML = `
+            <strong>Success!</strong> ${data.message}<br>
+            ${data.commit ? `<a href="${data.commit}" target="_blank" style="color: #065f46; text-decoration: underline;">View GitHub Commit</a>` : ''}
+          `;
+
+          document.getElementById('current-pass').value = newPass;
+          document.getElementById('new-pass').value = '';
+          document.getElementById('confirm-new-pass').value = '';
+        } else {
+          throw new Error(data.error || 'Failed to change admin password.');
+        }
+      } catch (err) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `<strong>Error:</strong> ${err.message}`;
+      } finally {
+        btn.disabled = false;
+        text.textContent = 'Update Password & Redeploy';
+        spinner.classList.add('hidden');
+      }
+    });
+
+    // ====================================================
+    // SETTINGS MODAL: GitHub Tab Handlers
+    // ====================================================
+    document.getElementById('test-settings-conn-btn').addEventListener('click', async function() {
+      const repo = document.getElementById('settings-repo').value.trim();
+      const token = document.getElementById('settings-token').value.trim();
+      const alertEl = document.getElementById('settings-alert');
+      const spinner = document.getElementById('test-settings-spinner');
+      const text = document.getElementById('test-settings-text');
+
+      alertEl.style.display = 'none';
+      spinner.classList.remove('hidden');
+      text.textContent = 'Testing...';
+
+      try {
+        const repoInfo = await testGitHubConnection(token, repo);
+        alertEl.className = 'alert alert-success';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `✅ <b>Connection Verified!</b> Successfully connected to <code>${repoInfo.full_name}</code> with push permissions.`;
+      } catch (err) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.style.display = 'block';
+        alertEl.innerHTML = `❌ <b>Connection Failed:</b> ${err.message}`;
+      } finally {
+        spinner.classList.add('hidden');
+        text.textContent = '🔍 Test Connection';
+      }
+    });
+
+    document.getElementById('settings-github-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const repo = document.getElementById('settings-repo').value.trim();
+      const token = document.getElementById('settings-token').value.trim();
+      const branch = document.getElementById('settings-branch').value.trim() || 'main';
+      const alertEl = document.getElementById('settings-alert');
+
+      if (token) localStorage.setItem('dtc_github_token', token);
+      if (repo) localStorage.setItem('dtc_github_repo', repo);
+      if (branch) localStorage.setItem('dtc_github_branch', branch);
+
+      document.getElementById('githubToken').value = token;
+      document.getElementById('githubRepo').value = repo;
+      document.getElementById('branch').value = branch;
+
+      updateConnectionStatusUI();
+
+      alertEl.className = 'alert alert-success';
+      alertEl.style.display = 'block';
+      alertEl.textContent = '✅ Settings successfully saved in browser!';
+    });
+
+    // ====================================================
+    // FORM SUBMIT: Updates Base64 images and commits to GitHub
+    // ====================================================
+    document.getElementById('pass-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('save-btn');
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('btn-spinner');
+      const alertBox = document.getElementById('alert-box');
+
+      const githubToken = document.getElementById('githubToken').value.trim() || localStorage.getItem('dtc_github_token') || '';
+      const githubRepo = document.getElementById('githubRepo').value.trim() || localStorage.getItem('dtc_github_repo') || '';
+      const branch = document.getElementById('branch').value.trim() || localStorage.getItem('dtc_github_branch') || 'main';
+
+      // If token or repo are missing, automatically open the setup modal!
+      if (!githubToken || !githubRepo) {
+        document.getElementById('setup-modal').classList.remove('hidden');
+        const setupAlert = document.getElementById('setup-alert');
+        setupAlert.className = 'alert alert-warning';
+        setupAlert.style.display = 'block';
+        setupAlert.textContent = 'Please enter your GitHub Token and Repository here first to enable auto-deploying to Vercel.';
+        return;
+      }
+
+      passData.busPassNo = document.getElementById('busPassNo').value.trim();
+      passData.name = document.getElementById('name').value.trim();
+      passData.route = document.getElementById('route').value.trim();
+      passData.validFrom = document.getElementById('validFrom').value.trim();
+      passData.validTo = document.getElementById('validTo').value.trim();
+
+      btn.disabled = true;
+      btnText.textContent = 'Saving Base64 Images & Auto-Deploying...';
+      spinner.classList.remove('hidden');
+      alertBox.style.display = 'none';
+
+      try {
+        const payload = {
+          ...passData,
+          password: currentPassword,
+          githubToken,
+          githubRepo,
+          branch
+        };
+
+        const res = await fetch('/api/update-pass', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-password': currentPassword
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if (res.ok && result.success) {
+          alertBox.className = 'alert alert-success';
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = `
+            <strong>🎉 Success!</strong> ${result.message}<br>
+            ${result.commit ? `<a href="${result.commit}" target="_blank" style="color: #065f46; font-weight: 600; text-decoration: underline;">View GitHub Commit</a> &bull; ` : ''}
+            <a href="index.html" target="_blank" style="color: #065f46; font-weight: 600; text-decoration: underline;">Open Live Pass</a>
+          `;
+        } else {
+          throw new Error(result.error || 'Failed to update pass');
+        }
+      } catch (err) {
+        alertBox.className = 'alert alert-danger';
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `<strong>Error:</strong> ${err.message}`;
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Save & Automatically Deploy to Vercel';
+        spinner.classList.add('hidden');
+      }
+    });
+
+    // Initialize Auth on Load
+    checkAuth();
+  </script>
+</body>
+</html>
